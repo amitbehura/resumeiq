@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResumeIQ – Boolean Builder & Resume Rewriter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --bg-light: #f4f4f9;
+      --bg-white: #ffffff;
+      --text-dark: #2f2f2f;
+      --text-muted: #6b6b6b;
+      --border: #dcdcdc;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: var(--primary);
+    }
+
+    .section {
+      background: var(--bg-white);
+      padding: 2rem;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section h2 {
+      font-size: 20px;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+      color: var(--text-dark);
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="range"] {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .upload-box {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      background-color: #fbfbfb;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .upload-box:hover {
+      background-color: #f0f0ff;
+      border-color: var(--primary);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      padding: 0.7rem 1.5rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background-color: #544dff;
+    }
+
+    .add-group, .keyword-input-btn {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      padding: 0.4rem 1rem;
+      font-size: 14px;
+      border-radius: 8px;
+      margin-top: 0.8rem;
+      cursor: pointer;
+    }
+
+    .group-box {
+      background: #f0f4f8;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .group-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .remove-group {
+      color: crimson;
+      cursor: pointer;
+    }
+
+    .sortable-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .keyword {
+      background: #cbe4f9;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .keyword span.remove-btn {
+      margin-left: 8px;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .exclude-group {
+      background: #fff2f2;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+
+    .exclude .keyword {
+      background: #f6c1c1;
+    }
+
+    #classificationInfo {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background-color: #f9f9f9;
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>ResumeIQ – Boolean Query Builder & Resume Rewriter</h1>
+
+  <div class="section">
+    <h2>1. Upload or Paste Job Description</h2>
+    <div id="jdDrop" class="upload-box">Click or Drag PDF JD here</div>
+    <input type="file" id="jdUpload" accept=".pdf" style="display: none;" />
+    <p style="text-align:center; margin: 1rem; color: var(--text-muted);">OR</p>
+    <textarea id="jdTextarea" placeholder="Paste JD text here..."></textarea>
+  </div>
+
+  <div class="section">
+    <h2>2. Extracted Keywords</h2>
+    <div id="includeBox"></div>
+    <div id="excludeBox" class="exclude-group"></div>
+    <div class="add-group" onclick="addNewGroup()">+ Add New Group</div>
+    <button id="generateBoolean">Generate Boolean Query</button>
+    <textarea id="booleanQuery" readonly placeholder="Your Boolean search will appear here..."></textarea>
+  </div>
+
+  <div class="section">
+    <h2>3. Upload Resume for Suggestions <span style="font-size:13px; color:#999;">(Experimental)</span></h2>
+    <div id="resumeDrop" class="upload-box">Click or Drag Resume PDF here</div>
+    <input type="file" id="resumeUpload" accept=".pdf" style="display:none" />
+    <label for="targetMatch" style="display:block; margin-top: 1rem;">Target Match Score: <span id="targetMatchValue">80%</span></label>
+    <input type="range" id="targetMatch" min="50" max="100" step="5" value="80" />
+    <button id="generatePointers">Generate Resume Suggestions</button>
+    <input type="text" id="matchScore" readonly placeholder="Current Match Score" />
+    <div id="classificationInfo"></div>
+    <textarea id="cvSuggestions" readonly placeholder="Suggestions will appear here..."></textarea>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="/static/script.js"></script>
+
+</body>
+</html>
