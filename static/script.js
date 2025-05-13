@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/extract-jd", {
+    const res = await fetch("https://resumeiq-backend.onrender.com/extract-jd", {
       method: "POST",
       body: formData
     });
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = jdTextarea.value.trim();
     if (!text) return;
 
-    const res = await fetch("/extract-jd-text", {
+    const res = await fetch("https://resumeiq-backend.onrender.com/extract-jd-text", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text })
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
   generateBoolean.addEventListener("click", async () => {
     updateGroupsFromDOM();
 
-    const res = await fetch("/generate-boolean", {
+    const res = await fetch("https://resumeiq-backend.onrender.com/generate-boolean", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("target_match", targetMatch.value);
     formData.append("jd_text", storedJDText);
 
-    const res = await fetch("/generate-pointers", {
+    const res = await fetch("https://resumeiq-backend.onrender.com/generate-pointers", {
       method: "POST",
       body: formData
     });
